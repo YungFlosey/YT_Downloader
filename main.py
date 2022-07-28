@@ -1,10 +1,10 @@
 import pytube
-from pytube import YouTube
-from downloads import download_high_res, download_low_res, download_audio
+from pytube import YouTube, Playlist
+from downloads import download
 import os
 import time
 import sys
-
+import threading
 
 if __name__ == '__main__':
 
@@ -47,19 +47,17 @@ if __name__ == '__main__':
         mainmenu_input = input("Drücke 3 um zum Hauptmenü zurück zu kehren.")
         if mainmenu_input == '3':
             main()
-        
-    def animate(done):
-        while done == 'false':
-            sys.stdout.write('\rDownloading |')
-            time.sleep(0.1)
-            sys.stdout.write('\rDownloading /')
-            time.sleep(0.1)
-            sys.stdout.write('\rDownloading -')
-            time.sleep(0.1)
-            sys.stdout.write('\rDownloading \\')
-            time.sleep(0.1)
-        sys.stdout.write('\rDone!     ')
 
+    def animate():
+        print('\rDownloading |', end='')
+        time.sleep(0.1)
+        print('\rDownloading /', end='')
+        time.sleep(0.1)
+        print('\rDownloading -', end='')
+        time.sleep(0.1)
+        print('\rDownloading \\', end='')
+        time.sleep(0.1)
+        
     def set_path():
         
         print('')
@@ -74,15 +72,17 @@ if __name__ == '__main__':
             print('Path set')
             main()
 
-        
-        
     def read_path():
         with open('path.txt') as f:
             lines = f.read()
         return lines
 
 
-        
+#Global variables
+
+
+
+
 # Program ?S?tart
 
     def main():
@@ -108,15 +108,21 @@ if __name__ == '__main__':
                         main()
                     if safepath =='s' or safepath=='S':
                         stanpath = read_path()
-                        download_high_res(video_link, stanpath)
-                        print('Download complete')
-                        print('')
-                        main()
+                        #download(video_link, stanpath, vh=True)
+                        vhs_thread = threading.Thread(target = download, args=[video_link, stanpath], kwargs={'vh':True})
+                        vhs_thread.start()
+                        while vhs_thread.is_alive():
+                            animate()
+                            print('')
+                            main()
                     else: 
-                        download_high_res(video_link, safepath)
-                        print('Download complete')
-                        print('')
-                        main()
+                        #download_high_res(video_link, safepath)
+                        vhp_thread = threading.Thread(target = download, args=[video_link, safepath], kwargs={'vh':True})
+                        vhp_thread.start()
+                        while vhp_thread.is_alive():
+                            animate()
+                            print('') 
+                            main()
 
                 elif resolution == 'L' or resolution == 'l':
                     print("Niedrige Qualität")
@@ -125,15 +131,21 @@ if __name__ == '__main__':
                         main()
                     if safepath =='s' or safepath=='S':
                         stanpath = read_path()
-                        download_low_res(video_link, stanpath)
-                        print('Download complete')
-                        print('')
-                        main()
+                        #download_low_res(video_link, stanpath)
+                        vls_thread = threading.Thread(target = download, args=[video_link, stanpath], kwargs={'vl':True})
+                        vls_thread.start()
+                        while vls_thread.is_alive():
+                            animate()
+                            print('')
+                            main()
                     else:   
-                        download_low_res(video_link, safepath)
-                        print('Download complete')
-                        print('')
-                        main()
+                        #download_low_res(video_link, safepath)
+                        vlp_thread = threading.Thread(target = download, args=[video_link, safepath], kwargs={'vl':True})
+                        vlp_thread.start()
+                        while vlp_thread.is_alive():
+                            animate()
+                            print('')
+                            main()
         elif eingeben=='2':
             video_link = video()
             if video_link == '4':
@@ -144,15 +156,21 @@ if __name__ == '__main__':
                     main()
                 if safepath =='s' or safepath=='S':
                         stanpath = read_path()
-                        download_audio(video_link, stanpath)
-                        print('Download complete')
+                        #download_audio(video_link, stanpath)
+                        as_thread = threading.Thread(target = download, args=[video_link, stanpath], kwargs={'a':True})
+                        as_thread.start()
+                        while as_thread.is_alive():
+                            animate()
+                            print('')
+                            main()
+                else:   
+                    #download_audio(video_link, safepath)
+                    ap_thread = threading.Thread(target = download, args=[video_link, safepath], kwargs={'a':True})
+                    ap_thread.start()
+                    while ap_thread.is_alive():
+                        animate()
                         print('')
                         main()
-                else:   
-                    download_audio(video_link, safepath)
-                    print('Download complete')
-                    print('')
-                    main()
                   
         elif eingeben=='3':
             set_path()
