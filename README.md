@@ -5,7 +5,7 @@ git clone https://github.com/YungFlosey/YT_Downloader.git
 
 cd YT Downloader
 
-To install type pip install -r requirements.txt
+to install type pip install -r requirements.txt
 
 to start run main.py
 
